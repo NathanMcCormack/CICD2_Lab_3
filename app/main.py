@@ -7,7 +7,7 @@
 
  # app/main.py
 from fastapi import FastAPI, HTTPException, status
-from .schemas import User
+from .schemas import User, UserUpdate
 
 app = FastAPI()
 users: list[User] = []
@@ -15,6 +15,10 @@ users: list[User] = []
 @app.get("/api/users")
 def get_users():
     return users
+
+@app.get("/api/users/health", status_code=status.HTTP_200_OK)
+def get_users():
+    return {"Status": "ok"}
 
 @app.get("/api/users/{user_id}")
 def get_user(user_id: int):
@@ -29,3 +33,16 @@ def add_user(user: User):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="user_id already exists")
     users.append(user)
     return user
+
+@app.put("/api/users/{user_id}", status_code=status.HTTP_200_OK)
+def update_user(user_id: int, updated_user: User):
+
+    for i, u in enumerate(users):
+        if u.user_id == user_id:
+            users[i].name = updated_user
+        return updated_user
+
+@app.delete("/api/users/{user_id}")
+def delete_user(user_id: int): 
+    users.pop(user_id)
+    return {"message": "User deleted successfully"}
