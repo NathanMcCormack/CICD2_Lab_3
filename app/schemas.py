@@ -6,6 +6,7 @@ class User(BaseModel):
  name: constr(min_length=2, max_length=50)
  email: EmailStr #normal email sontraints
  age: conint(gt=18) #>18
+ student_id: constr(pattern=r'^S\d{7}$') #must start with "S" and follwed by exaclty 7 digits
 
 class UserUpdate(BaseModel):
     user_id: int
