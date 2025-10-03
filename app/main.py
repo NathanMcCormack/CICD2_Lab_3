@@ -6,7 +6,7 @@
 #  return {"message": "Hello, World!"}
 
  # app/main.py
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Response
 from .schemas import User, UserUpdate
 
 app = FastAPI()
@@ -16,9 +16,9 @@ users: list[User] = []
 def get_users():
     return users
 
-@app.get("/api/users/health", status_code=status.HTTP_200_OK)
+@app.get("/health")
 def get_users():
-    return {"Status": "ok"}
+    return {"status": "ok"}
 
 @app.get("/api/users/{user_id}")
 def get_user(user_id: int):
@@ -40,11 +40,17 @@ def update_user(user_id: int, updated_user: User):
     for i, u in enumerate(users):
         if u.user_id == user_id:
             users[i].name = updated_user
-        return updated_user
+        #return updated_user
+            return Response(status_code=status.HTTP_200_OK)
+    raise HTTPException(status_code=404, detail="User not found")
+
 
 @app.delete("/api/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int):
     for i, u in enumerate(users):
         if u.user_id == user_id:
             users.pop(i)
-    return {"message": "User deleted successfully"}
+ # 204 No Content should return an empty body
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+    # If we didn’t find the user, return 404
+    raise HTTPException(status_code=404, detail="User not found")
