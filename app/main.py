@@ -42,7 +42,9 @@ def update_user(user_id: int, updated_user: User):
             users[i].name = updated_user
         return updated_user
 
-@app.delete("/api/users/{user_id}")
-def delete_user(user_id: int): 
-    users.pop(user_id)
+@app.delete("/api/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: int):
+    for i, u in enumerate(users):
+        if u.user_id == user_id:
+            users.pop(i)
     return {"message": "User deleted successfully"}
